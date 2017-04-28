@@ -14,14 +14,9 @@ module BuildChef
     block "Put build config into #{bundle_config}: #{{ without: without, retries: retries, jobs: jobs, frozen: frozen }}" do
       # bundle config build.nokogiri #{nokogiri_build_config} messes up the line,
       # so we write it directly ourselves.
+      return unless without
       new_bundle_config = "---\n"
       new_bundle_config << "BUNDLE_WITHOUT: #{Array(without).join(":")}\n" if without
-      new_bundle_config << "BUNDLE_RETRY: #{retries}\n" if retries
-      new_bundle_config << "BUNDLE_JOBS: #{jobs}\n" if jobs
-      new_bundle_config << "BUNDLE_FROZEN: '1'\n" if frozen
-      all_install_args.each do |gem_name, install_args|
-        new_bundle_config << "BUNDLE_BUILD__#{gem_name.upcase}: #{install_args}\n"
-      end
       create_file(bundle_config) { new_bundle_config }
     end
   end
