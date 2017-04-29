@@ -41,7 +41,7 @@ module BuildChef
   def properly_reinstall_git_and_path_sourced_gems
     # Emit blank line to separate different tasks
     block { log.info(log_key) { "" } }
-    project_env = env.dup.merge("BUNDLE_GEMFILE" => project_gemfile)
+    #project_env = env.dup.merge("BUNDLE_GEMFILE" => project_gemfile)
 
     # Reinstall git-sourced or path-sourced gems, and delete the originals
     block "Reinstall git-sourced gems properly" do
@@ -78,7 +78,7 @@ module BuildChef
     block { log.info(log_key) { "" } }
 
     shared_gemfile = self.shared_gemfile
-    project_env = env.dup.merge("BUNDLE_GEMFILE" => project_gemfile)
+    #project_env = env.dup.merge("BUNDLE_GEMFILE" => project_gemfile)
 
     # Show the config for good measure
     bundle "config", env: project_env
@@ -114,7 +114,7 @@ module BuildChef
       EOM
     end
 
-    shared_gemfile_env = env.dup.merge("BUNDLE_GEMFILE" => shared_gemfile)
+    #shared_gemfile_env = env.dup.merge("BUNDLE_GEMFILE" => shared_gemfile)
 
     # Create a `Gemfile.lock` at the final location
     bundle "lock", env: shared_gemfile_env
