@@ -66,6 +66,8 @@ module BuildChef
         log.info(log_key) { "" }
         log.info(log_key) { "Properly installing git or path sourced gem #{gem_path} using rake install" }
         shellout!("cat .bundle/config")
+        shellout!("#{bundle_bin} --version")
+        shellout!("#{bundle_bin} exec rake --version")
         shellout!("#{bundle_bin} exec #{rake_bin} install", env: project_env, cwd: gem_path)
       end
     end
