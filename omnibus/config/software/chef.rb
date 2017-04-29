@@ -63,7 +63,7 @@ build do
   extend BuildChef
 
   project_env = env.dup
-  project_env["BUNDLE_GEMFILE"] = project_gemfile
+#  project_env["BUNDLE_GEMFILE"] = project_gemfile
 
   # Prepare to install: build config, retries, job, frozen=true
   # TODO Windows install seems to sometimes install already-installed gems such
