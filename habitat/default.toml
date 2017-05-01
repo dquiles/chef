@@ -9,3 +9,11 @@ log_level = "info"
 
 # The default run list
 run_list = ""
+
+[chef-client]
+node_path="chef/node"
+
+[data_collector]
+url="https://delivery.chef.co/data-collector/v0/"
+token="e120f9ed31db404889bf0f40d83673fddf0d07d1b906643717675733ae56ea55"
+raise_on_failure=false

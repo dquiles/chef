@@ -52,37 +52,20 @@ do_build() {
 
   bundle config --local silence_root_warning 1
 
-  # We need to add tzinfo-data to the Gemfile since we're not in an
-  # environment that has this from the OS
-  if [[ -z "`grep 'gem .*tzinfo-data.*' Gemfile`" ]]; then
-    echo 'gem "tzinfo-data"' >> Gemfile
-  fi
+  pushd chef-config > /dev/null
+  bundle install --jobs "$(nproc)" --retry 5 \
+    --standalone \
+    --binstubs "${pkg_prefix}/bin" \
+    --path "${pkg_prefix}"
+  popd > /dev/null
 
-  bundle install --no-deployment --jobs 2 --retry 5 --path $pkg_prefix
-
-  bundle exec 'cd ./chef-config && rake package'
-  bundle exec 'rake package'
-  mkdir -p gems-suck/gems
-  cp pkg/chef-$pkg_version.gem gems-suck/gems
-  cp chef-config/pkg/chef-config-$pkg_version.gem gems-suck/gems
-  bundle exec gem generate_index -d gems-suck
-
-  sed -e "s#gem \"chef\".*#gem \"chef\", source: \"file://$HAB_CACHE_SRC_PATH/$pkg_dirname/gems-suck\"#" -i Gemfile
-  sed -e "s#gem \"chef-config\".*#gem \"chef-config\", source: \"file://$HAB_CACHE_SRC_PATH/$pkg_dirname/gems-suck\"#" -i Gemfile
-  #bundle config --local local.chef $HAB_CACHE_SRC_PATH/$pkg_dirname/gems-suck
-  #bundle config --local local.chef-config $HAB_CACHE_SRC_PATH/$pkg_dirname/gems-suck
-
-  bundle install --no-deployment --jobs 2 --retry 5 --path $pkg_prefix
-
+  bundle install --jobs "$(nproc)" --retry 5 \
+    --standalone --no-deployment \
+    --binstubs "${pkg_prefix}/bin" \
+    --path "${pkg_prefix}"
 }
 
 do_install() {
-
-  mkdir -p $pkg_prefix/bin
-
-  bundle exec appbundler $HAB_CACHE_SRC_PATH/$pkg_dirname $pkg_prefix/bin chef
-  bundle exec appbundler $HAB_CACHE_SRC_PATH/$pkg_dirname $pkg_prefix/bin ohai
-
   for binstub in ${pkg_prefix}/bin/*; do
     build_line "Setting shebang for ${binstub} to 'ruby'"
     [[ -f $binstub ]] && sed -e "s#/usr/bin/env ruby#$(pkg_path_for ruby)/bin/ruby#" -i $binstub
